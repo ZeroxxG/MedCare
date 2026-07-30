@@ -1,0 +1,10 @@
+from django.contrib import admin
+from .models import PatientProfile
+
+@admin.register(PatientProfile)
+class PatientProfileAdmin(admin.ModelAdmin):
+    list_display = ('get_full_name', 'gender', 'blood_group', 'emergency_contact')
+    search_fields = ('user__first_name', 'user__last_name', 'user__email')
+
+    def get_full_name(self, obj):
+        return obj.user.get_full_name()
