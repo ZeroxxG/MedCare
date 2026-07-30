@@ -1,4 +1,4 @@
-# 🏥 MediConnect — Healthcare Appointment Booking Platform
+# 🏥 MedCare — Healthcare Appointment Booking Platform
 
 > A production-ready, full-stack healthcare appointment booking platform built with **React 18 + Vite** on the frontend and **Django 5 + Django REST Framework** on the backend. Inspired by platforms like Practo.
 
