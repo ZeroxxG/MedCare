@@ -1,6 +1,6 @@
 # 🏥 MedCare — Healthcare Appointment Booking Platform
 
-> A production-ready, full-stack healthcare appointment booking platform built with **React 18 + Vite** on the frontend and **Django 5 + Django REST Framework** on the backend. Inspired by platforms like Practo.
+> A production-ready, full-stack healthcare appointment booking platform built with **React 18 + Vite** on the frontend and **Django 5 + Django REST Framework** on the backend.
 
 [![Python](https://img.shields.io/badge/Python-3.11+-3776AB?style=flat&logo=python&logoColor=white)](https://python.org)
 [![Django](https://img.shields.io/badge/Django-5.x-092E20?style=flat&logo=django&logoColor=white)](https://djangoproject.com)
