@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import { appointmentService } from '../services/appointmentService';
 import { useAuth } from '../context/AuthContext';
 import { StatusBadge } from '../components/StatusBadge';
@@ -86,9 +87,9 @@ export const PatientDashboard = () => {
             <div className="bg-white dark:bg-slate-900 rounded-3xl p-12 text-center border border-slate-200 dark:border-slate-800 space-y-3">
               <Calendar className="w-12 h-12 text-slate-300 mx-auto" />
               <p className="font-bold text-slate-700 dark:text-slate-300">No appointments booked yet.</p>
-              <a href="/doctors" className="inline-block px-5 py-2.5 bg-brand-600 text-white font-bold text-xs rounded-xl shadow-md">
+              <Link to="/doctors" className="inline-block px-5 py-2.5 bg-brand-600 text-white font-bold text-xs rounded-xl shadow-md">
                 Find a Doctor
-              </a>
+              </Link>
             </div>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">

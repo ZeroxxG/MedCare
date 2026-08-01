@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import { Activity, Heart, Shield, Award } from 'lucide-react';
 
 export const Footer = () => {
@@ -23,9 +24,9 @@ export const Footer = () => {
           <div>
             <h4 className="font-semibold text-white mb-4">For Patients</h4>
             <ul className="space-y-2 text-sm">
-              <li><a href="/doctors" className="hover:text-brand-400 transition-colors">Search Doctors</a></li>
+              <li><Link to="/doctors" className="hover:text-brand-400 transition-colors">Search Doctors</Link></li>
               <li><a href="#specializations" className="hover:text-brand-400 transition-colors">Specialties</a></li>
-              <li><a href="/patient-dashboard" className="hover:text-brand-400 transition-colors">Appointment History</a></li>
+              <li><Link to="/patient-dashboard" className="hover:text-brand-400 transition-colors">Appointment History</Link></li>
               <li><a href="#" className="hover:text-brand-400 transition-colors">Teleconsultation</a></li>
             </ul>
           </div>

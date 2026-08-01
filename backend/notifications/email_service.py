@@ -64,7 +64,7 @@ Please log in to your MediConnect Doctor Dashboard to manage this appointment.
             message=patient_body,
             from_email=settings.DEFAULT_FROM_EMAIL,
             recipient_list=[patient_email],
-            fail_silently=False
+            fail_silently=True
         )
 
         send_mail(
@@ -72,7 +72,7 @@ Please log in to your MediConnect Doctor Dashboard to manage this appointment.
             message=doctor_body,
             from_email=settings.DEFAULT_FROM_EMAIL,
             recipient_list=[doctor_email],
-            fail_silently=False
+            fail_silently=True
         )
     except Exception as e:
         print(f"[EMAIL SERVICE ERROR] {e}")
