@@ -7,6 +7,7 @@ from rest_framework_simplejwt.tokens import RefreshToken
 from django.contrib.auth import get_user_model
 from django.core.mail import send_mail
 from django.conf import settings
+from notifications.email_service import send_registration_email, send_password_reset_email
 
 from .models import EmailVerificationToken, PasswordResetToken
 from .serializers import (
@@ -57,17 +58,8 @@ class RegisterView(APIView):
                 from patients.models import PatientProfile
                 PatientProfile.objects.create(user=user)
 
-            # Generate Email Verification Token
-            token_obj = EmailVerificationToken.objects.create(user=user)
-            
-            # Send Email Verification
-            send_mail(
-                subject='Verify your MediConnect Account',
-                message=f'Welcome to MediConnect! Use this token to verify your email: {token_obj.token}',
-                from_email=settings.DEFAULT_FROM_EMAIL,
-                recipient_list=[user.email],
-                fail_silently=True
-            )
+            # Send welcome + verification email in background thread
+            send_registration_email(user)
 
             # Issue JWT Token automatically on register
             refresh = RefreshToken.for_user(user)
@@ -241,21 +233,15 @@ Thank you,
 The MediConnect Team
 """
 
-                print(f"[EMAIL SERVICE] Sending password reset link '{reset_link}' to {user.email}")
-                send_mail(
-                    subject=email_subject,
-                    message=email_body,
-                    from_email=settings.DEFAULT_FROM_EMAIL,
-                    recipient_list=[user.email],
-                    fail_silently=True
-                )
+                # Send password reset email in background thread
+                send_password_reset_email(user, reset_link)
 
                 try:
                     from notifications.models import Notification
                     Notification.objects.create(
                         user=user,
-                        title=email_subject,
-                        message=email_body
+                        title='Reset Your MediConnect Password',
+                        message=f'Your password reset link: {reset_link}'
                     )
                 except Exception:
                     pass
