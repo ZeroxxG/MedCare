@@ -196,10 +196,25 @@ def seed_database():
         )
         print("OK: Created Completed Appointment, Stripe Payment record, and 5-Star Doctor Review")
 
+    # 6. Admin Superuser Creation
+    admin_email = os.environ.get('ADMIN_EMAIL', 'admin@mediconnect.com')
+    admin_password = os.environ.get('ADMIN_PASSWORD', 'admin123')
+    if not User.objects.filter(email=admin_email).exists():
+        admin_user = User.objects.create_superuser(
+            email=admin_email,
+            password=admin_password,
+            first_name="System",
+            last_name="Admin"
+        )
+        print(f"OK: Created Admin Superuser ({admin_email})")
+    else:
+        print(f"OK: Admin Superuser ({admin_email}) already exists")
+
     print("\nSUCCESS: Database Seeding Complete!")
     print("--------------------------------------------------")
     print("Demo Patient Login: john.doe@gmail.com / patient123")
     print("Demo Doctor Login:  dr.sarah.jenkins@mediconnect.com / doctor123")
+    print(f"Admin Login:        {admin_email} / {admin_password}")
     print("--------------------------------------------------")
 
 if __name__ == '__main__':
