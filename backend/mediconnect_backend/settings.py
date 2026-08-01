@@ -211,3 +211,6 @@ else:
 RAZORPAY_KEY_ID = os.environ.get('RAZORPAY_KEY_ID', '')
 RAZORPAY_KEY_SECRET = os.environ.get('RAZORPAY_KEY_SECRET', '').strip()
 GOOGLE_CLIENT_ID = os.environ.get('GOOGLE_CLIENT_ID', '')
+
+# Frontend URL — used in password reset emails (set this in Render env vars)
+FRONTEND_URL = os.environ.get('FRONTEND_URL', 'http://localhost:5173')

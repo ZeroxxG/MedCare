@@ -6,7 +6,6 @@ from drf_spectacular.views import SpectacularAPIView, SpectacularSwaggerView, Sp
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('api/admin/', admin.site.urls),
 
     # OpenAPI 3 Schema & Swagger UI
     path('api/schema/', SpectacularAPIView.as_view(), name='schema'),

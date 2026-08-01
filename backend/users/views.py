@@ -6,6 +6,7 @@ from rest_framework_simplejwt.views import TokenObtainPairView
 from rest_framework_simplejwt.tokens import RefreshToken
 from django.contrib.auth import get_user_model
 from django.core.mail import send_mail
+from django.conf import settings
 
 from .models import EmailVerificationToken, PasswordResetToken
 from .serializers import (
@@ -223,7 +224,8 @@ class ForgotPasswordView(APIView):
                 user = User.objects.get(email=email)
                 token_obj = PasswordResetToken.objects.create(user=user)
                 reset_token = str(token_obj.token)
-                reset_link = f"http://localhost:5173/forgot-password?token={reset_token}"
+                frontend_url = os.environ.get('FRONTEND_URL', 'http://localhost:5173')
+                reset_link = f"{frontend_url}/forgot-password?token={reset_token}"
 
                 email_subject = 'Reset Your MediConnect Password'
                 email_body = f"""Dear User,
