@@ -1,10 +1,35 @@
+# Core Django
 Django>=5.0,<6.0
 djangorestframework>=3.14.0
 djangorestframework-simplejwt>=5.3.0
+
+# API Documentation
 drf-spectacular>=0.27.0
+
+# CORS
 django-cors-headers>=4.3.0
+
+# Filtering
 django-filter>=23.5
+
+# Payment Gateways
 stripe>=8.0.0
 razorpay>=1.4.0
-pillow>=10.0.0
+
+# Image handling
+Pillow>=10.0.0
+
+# HTTP requests (for Google OAuth token verification)
 requests>=2.31.0
+
+# Production server
+gunicorn>=21.2.0
+
+# Static file serving (WhiteNoise)
+whitenoise>=6.6.0
+
+# PostgreSQL driver (used on Render/production)
+psycopg2-binary>=2.9.9
+
+# Environment variable parsing (optional but recommended)
+dj-database-url>=2.1.0

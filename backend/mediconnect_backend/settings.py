@@ -56,6 +56,7 @@ INSTALLED_APPS = [
 MIDDLEWARE = [
     'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',  # Serve static files
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -84,13 +85,21 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'mediconnect_backend.wsgi.application'
 
-# Database Configuration (SQLite for local dev, easily swappable to PostgreSQL)
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+# Database Configuration
+# - Local dev: SQLite (zero config)
+# - Production (Render): Set DATABASE_URL env var — auto-detected below
+import dj_database_url as _dj_db_url
+
+_database_url = os.environ.get('DATABASE_URL')
+if _database_url:
+    DATABASES = {'default': _dj_db_url.config(default=_database_url, conn_max_age=600, ssl_require=True)}
+else:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': BASE_DIR / 'db.sqlite3',
+        }
     }
-}
 
 AUTH_USER_MODEL = 'users.User'
 
@@ -111,6 +120,7 @@ USE_TZ = True
 # Static files & Media
 STATIC_URL = '/static/'
 STATIC_ROOT = BASE_DIR / 'staticfiles'
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
 
@@ -155,7 +165,12 @@ SPECTACULAR_SETTINGS = {
 }
 
 # CORS Settings
-CORS_ALLOW_ALL_ORIGINS = True
+# In production, set CORS_ALLOWED_ORIGINS in .env as a comma-separated list
+_cors_origins = os.environ.get('CORS_ALLOWED_ORIGINS', '')
+if _cors_origins:
+    CORS_ALLOWED_ORIGINS = [o.strip() for o in _cors_origins.split(',') if o.strip()]
+else:
+    CORS_ALLOW_ALL_ORIGINS = True  # Dev only — override in production
 CORS_ALLOW_CREDENTIALS = True
 
 # Email Configuration (SMTP if credentials supplied, console fallback)

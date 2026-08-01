@@ -1,0 +1,19 @@
+# Always use Unix line endings for shell scripts (required for Linux/Render)
+*.sh text eol=lf
+
+# Python files - Unix endings
+*.py text eol=lf
+
+# Web files
+*.js text eol=lf
+*.jsx text eol=lf
+*.ts text eol=lf
+*.tsx text eol=lf
+*.css text eol=lf
+*.html text eol=lf
+*.json text eol=lf
+
+# Docs
+*.md text eol=lf
+*.yml text eol=lf
+*.yaml text eol=lf
