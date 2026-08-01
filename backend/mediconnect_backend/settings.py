@@ -168,12 +168,22 @@ SPECTACULAR_SETTINGS = {
 }
 
 # CORS Settings
-# In production, set CORS_ALLOWED_ORIGINS in .env as a comma-separated list
-_cors_origins = os.environ.get('CORS_ALLOWED_ORIGINS', '')
+_cors_origins = os.environ.get('CORS_ALLOWED_ORIGINS', '').strip()
 if _cors_origins:
-    CORS_ALLOWED_ORIGINS = [o.strip() for o in _cors_origins.split(',') if o.strip()]
+    _parsed_origins = []
+    for _item in _cors_origins.split(','):
+        _item = _item.strip().rstrip('/')
+        if _item:
+            if not _item.startswith(('http://', 'https://')):
+                _item = f'https://{_item}'
+            _parsed_origins.append(_item)
+    if _parsed_origins:
+        CORS_ALLOWED_ORIGINS = _parsed_origins
+    else:
+        CORS_ALLOW_ALL_ORIGINS = True
 else:
-    CORS_ALLOW_ALL_ORIGINS = True  # Dev only — override in production
+    CORS_ALLOW_ALL_ORIGINS = True
+
 CORS_ALLOW_CREDENTIALS = True
 
 # Email Configuration (SMTP if credentials supplied, console fallback)
