@@ -63,7 +63,7 @@ class RegisterView(APIView):
             send_mail(
                 subject='Verify your MediConnect Account',
                 message=f'Welcome to MediConnect! Use this token to verify your email: {token_obj.token}',
-                from_email='noreply@mediconnect.com',
+                from_email=settings.DEFAULT_FROM_EMAIL,
                 recipient_list=[user.email],
                 fail_silently=True
             )
@@ -243,7 +243,7 @@ The MediConnect Team
                 send_mail(
                     subject=email_subject,
                     message=email_body,
-                    from_email='MediConnect Healthcare <noreply@mediconnect.com>',
+                    from_email=settings.DEFAULT_FROM_EMAIL,
                     recipient_list=[user.email],
                     fail_silently=True
                 )

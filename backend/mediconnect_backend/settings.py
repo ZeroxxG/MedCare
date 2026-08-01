@@ -199,7 +199,13 @@ if EMAIL_HOST_USER and EMAIL_HOST_PASSWORD:
 else:
     EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
-DEFAULT_FROM_EMAIL = os.environ.get('DEFAULT_FROM_EMAIL', 'MediConnect Healthcare <noreply@mediconnect.com>')
+_default_from = os.environ.get('DEFAULT_FROM_EMAIL', '').strip()
+if _default_from:
+    DEFAULT_FROM_EMAIL = _default_from
+elif EMAIL_HOST_USER:
+    DEFAULT_FROM_EMAIL = f"MediConnect Healthcare <{EMAIL_HOST_USER}>"
+else:
+    DEFAULT_FROM_EMAIL = 'MediConnect Healthcare <noreply@mediconnect.com>'
 
 # Razorpay & Google Credentials (Loaded strictly from .env)
 RAZORPAY_KEY_ID = os.environ.get('RAZORPAY_KEY_ID', '')
