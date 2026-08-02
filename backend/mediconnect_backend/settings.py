@@ -186,13 +186,26 @@ else:
 
 CORS_ALLOW_CREDENTIALS = True
 
-# Email Configuration (SMTP if credentials supplied, console fallback)
+# Email Configuration (SMTP Port 465 SSL to bypass cloud firewall blocks on port 587)
 EMAIL_HOST = os.environ.get('EMAIL_HOST', 'smtp.gmail.com')
-EMAIL_PORT = int(os.environ.get('EMAIL_PORT', 587))
-EMAIL_USE_TLS = os.environ.get('EMAIL_USE_TLS', 'True') == 'True'
-EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER', '')
-EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD', '')
-EMAIL_TIMEOUT = 5  # 5-second socket timeout to prevent worker hangs
+EMAIL_PORT = int(os.environ.get('EMAIL_PORT', 465))
+_use_ssl_env = os.environ.get('EMAIL_USE_SSL')
+_use_tls_env = os.environ.get('EMAIL_USE_TLS')
+
+if _use_ssl_env is not None:
+    EMAIL_USE_SSL = _use_ssl_env == 'True'
+    EMAIL_USE_TLS = _use_tls_env == 'True' if _use_tls_env is not None else not EMAIL_USE_SSL
+else:
+    if EMAIL_PORT == 465:
+        EMAIL_USE_SSL = True
+        EMAIL_USE_TLS = False
+    else:
+        EMAIL_USE_SSL = False
+        EMAIL_USE_TLS = True
+
+EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER', '').strip()
+EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD', '').strip()
+EMAIL_TIMEOUT = 10  # 10-second socket timeout
 
 if EMAIL_HOST_USER and EMAIL_HOST_PASSWORD:
     EMAIL_BACKEND = 'notifications.smtp_backend.IPv4EmailBackend'
