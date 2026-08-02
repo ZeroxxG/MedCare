@@ -17,7 +17,6 @@ def send_via_resend_api(api_key, subject, message, from_email, recipient_list):
         "Authorization": f"Bearer {api_key}",
         "Content-Type": "application/json"
     }
-    # Default free testing sender on Resend: onboarding@resend.dev
     sender = os.environ.get('RESEND_FROM_EMAIL', 'MediConnect Healthcare <onboarding@resend.dev>')
     payload = {
         "from": sender,
@@ -73,6 +72,9 @@ class IPv4EmailBackend(DjangoEmailBackend):
     3. Supports Resend / Brevo HTTP APIs over Port 443 HTTPS if SMTP ports (25/465/587) are completely blocked by host firewall.
     """
     def send_messages(self, email_messages):
+        if not email_messages:
+            return 0
+
         # Check if HTTP API keys are set in environment
         resend_key = os.environ.get('RESEND_API_KEY', '').strip()
         brevo_key = os.environ.get('BREVO_API_KEY', '').strip()
@@ -91,13 +93,13 @@ class IPv4EmailBackend(DjangoEmailBackend):
                     sent_count += 1
             return sent_count
 
-        # Otherwise use standard SMTP with IPv4 & SSL fallback
+        # Standard SMTP with IPv4 & SSL fallback
         try:
             return super().send_messages(email_messages)
         except Exception as e:
-            print(f"[SMTP BACKEND ERROR] All SMTP ports (587 & 465) failed/timed out ({e}). Cloud provider (Render) is blocking raw SMTP ports.")
-            print("[SMTP TIP] Add RESEND_API_KEY or BREVO_API_KEY in Render Environment Variables to send emails via Port 443 HTTPS API!")
-            raise e
+            print(f"[SMTP BACKEND ERROR] All SMTP ports (587 & 465) failed/timed out: {e}")
+            print("[SMTP TIP] Render blocks raw SMTP ports on free tier. Add RESEND_API_KEY or BREVO_API_KEY in Render Environment Variables to send emails via Port 443 HTTPS API!")
+            return 0
 
     def open(self):
         if self.connection:
@@ -110,8 +112,9 @@ class IPv4EmailBackend(DjangoEmailBackend):
 
         try:
             socket.getaddrinfo = ipv4_getaddrinfo
-            return super().open()
-        except (TimeoutError, socket.timeout, OSError) as primary_err:
+            res = super().open()
+            return res
+        except Exception as primary_err:
             if self.port != 465:
                 print(f"[SMTP BACKEND] Primary connection on port {self.port} failed ({primary_err}). Retrying via Port 465 SSL...")
                 try:
@@ -128,7 +131,7 @@ class IPv4EmailBackend(DjangoEmailBackend):
                     return True
                 except Exception as fallback_err:
                     print(f"[SMTP BACKEND ERROR] Port 465 SSL Fallback failed: {fallback_err}")
-                    raise primary_err
-            raise primary_err
+                    return False
+            return False
         finally:
             socket.getaddrinfo = orig_getaddrinfo
