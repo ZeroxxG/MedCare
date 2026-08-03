@@ -14,10 +14,11 @@ def send_via_resend_api(api_key, subject, message, from_email, recipient_list):
     """
     url = "https://api.resend.com/emails"
     headers = {
-        "Authorization": f"Bearer {api_key}",
+        "Authorization": f"Bearer {api_key.strip()}",
         "Content-Type": "application/json"
     }
-    sender = os.environ.get('RESEND_FROM_EMAIL', 'MediConnect Healthcare <onboarding@resend.dev>')
+    # On Resend free tier without verified domain, 'from' must be 'onboarding@resend.dev' or 'Name <onboarding@resend.dev>'
+    sender = os.environ.get('RESEND_FROM_EMAIL', 'MediConnect <onboarding@resend.dev>').strip()
     payload = {
         "from": sender,
         "to": recipient_list if isinstance(recipient_list, list) else [recipient_list],
@@ -30,6 +31,10 @@ def send_via_resend_api(api_key, subject, message, from_email, recipient_list):
         with urllib.request.urlopen(req, timeout=10) as resp:
             print(f"[RESEND HTTP API SUCCESS] Email delivered over Port 443 HTTPS (Status {resp.status})")
             return True
+    except urllib.error.HTTPError as e:
+        body = e.read().decode('utf-8', errors='ignore')
+        print(f"[RESEND HTTP API ERROR] HTTP {e.code}: {body}")
+        return False
     except Exception as e:
         print(f"[RESEND HTTP API ERROR] {e}")
         return False
@@ -42,11 +47,11 @@ def send_via_brevo_api(api_key, subject, message, from_email, recipient_list):
     """
     url = "https://api.brevo.com/v3/smtp/email"
     headers = {
-        "api-key": api_key,
+        "api-key": api_key.strip(),
         "Content-Type": "application/json"
     }
     recipients = [{"email": email} for email in (recipient_list if isinstance(recipient_list, list) else [recipient_list])]
-    sender_email = os.environ.get('EMAIL_HOST_USER', 'mdhamd90@gmail.com')
+    sender_email = os.environ.get('EMAIL_HOST_USER', 'mdhamd90@gmail.com').strip()
     payload = {
         "sender": {"name": "MediConnect Healthcare", "email": sender_email},
         "to": recipients,
@@ -59,6 +64,10 @@ def send_via_brevo_api(api_key, subject, message, from_email, recipient_list):
         with urllib.request.urlopen(req, timeout=10) as resp:
             print(f"[BREVO HTTP API SUCCESS] Email delivered over Port 443 HTTPS (Status {resp.status})")
             return True
+    except urllib.error.HTTPError as e:
+        body = e.read().decode('utf-8', errors='ignore')
+        print(f"[BREVO HTTP API ERROR] HTTP {e.code}: {body}")
+        return False
     except Exception as e:
         print(f"[BREVO HTTP API ERROR] {e}")
         return False
